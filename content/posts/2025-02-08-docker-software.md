@@ -1,11 +1,11 @@
 +++ 
-draft = true
+draft = false
 date = 2025-02-08T15:49:07-07:00
 title = "Using Docker for Software builds"
 description = "my first attempt at static site generation"
 slug = ""
 authors = ["Austin Calkins"]
-tags = ["hugo"]
+tags = ["docker"]
 categories = []
 externalLink = ""
 series = []
