@@ -29,7 +29,7 @@ Docker ensures that the build process doesn't interfere with the host system by 
 To demonstrate how Docker can be used to build software, let's examine the Dockerfile used to deploy this personal website built using hugo.
 
 
-### Step1: Cloning the repository
+### Step 1: Cloning the repository
 cloning the respository will pull down all sources required to build and manage my personal site
 ```sh
 git clone https://github.com/austin-calkins/personal-site.git
