@@ -2,7 +2,7 @@
 draft = false
 date = 2025-02-08T15:49:07-07:00
 title = "Using Docker for Software builds"
-description = "my first attempt at static site generation"
+description = "Docker can manage both software builds and deployments"
 slug = ""
 authors = ["Austin Calkins"]
 tags = ["docker"]
@@ -26,56 +26,59 @@ Docker ensures that the build process doesn't interfere with the host system by 
 
 ## Setting Up a Docker Build Environment
 
-To demonstrate how Docker can be used to build software, let's create a simple C++ application inside a container.
+To demonstrate how Docker can be used to build software, let's examine the Dockerfile used to deploy this personal website built using hugo.
 
-### Step 1: Writing a Sample C++ Program
 
-Create a file named `main.cpp`:
-
-```cpp
-#include <iostream>
-
-int main() {
-    std::cout << "Hello, Docker!" << std::endl;
-    return 0;
-}
+### Step1: Cloning the repository
+cloning the respository will pull down all sources required to build and manage my personal site
+```sh
+git clone https://github.com/austin-calkins/personal-site.git
 ```
 
 ### Step 2: Creating a Dockerfile
 
-A `Dockerfile` defines how the build environment is set up.
+This `Dockerfile` defines how the build environment is set up using hugo, and how to use nginx to serve the static site.
 
 ```Dockerfile
-# Use an official GCC image
-FROM gcc:latest
+FROM hugomods/hugo:reg-base-0.143.1 AS builder
 
-# Set working directory
-WORKDIR /app
+# Set the working directory inside the container
+WORKDIR /src
 
-# Copy source code into the container
-COPY main.cpp .
+# Copy the Hugo site files into the container
+COPY . .
 
-# Compile the C++ program
-RUN g++ main.cpp -o hello
+# Build the Hugo site
+RUN hugo
 
-# Set the default command
-CMD ["./hello"]
+# Use an Nginx image to serve the static files
+FROM nginx:alpine
+
+# Copy the built site from the builder stage
+COPY --from=builder /src/public /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
 ```
+Hugo generates a static site from all markdown provided and moves all generated markup in the public directory that can be served in many ways, in this case, copied and served from an nginx container.
 
 ### Step 3: Building and Running the Container
 
 Run the following commands to build and execute the software inside the Docker container:
 
 ```sh
-docker build -t cpp-docker .
-docker run --rm cpp-docker
+docker build -t personal-site .
+docker run -p 80:80 personal-site
 ```
 
-This will output:
+This will serve the hugo site with nginx and make the website accessible on port 80
 
-```
-Hello, Docker!
-```
+navigate to http://localhost and the static site will load in the browse
+
+
 
 ## Best Practices for Using Docker in Software Builds
 
